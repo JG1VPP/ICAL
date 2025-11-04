@@ -1,0 +1,10 @@
+[project]
+name = "ical"
+version = "0.1.0"
+dependencies = []
+
+[build-system]
+requires = ["setuptools", "torch>=2.4"]
+
+[tool.setuptools.packages.find]
+include = ["ical"]

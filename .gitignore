@@ -1,0 +1,10 @@
+.*
+__pycache__/
+*.egg-info/
+*.egg
+*.pkl
+*.pth
+build/
+lightning_logs/
+!.gitignore
+!.github/
