@@ -3,9 +3,11 @@ from pathlib import Path
 from pickle import dumps
 from typing import Sequence
 
-from comer.datamodule import CROHMEDatamodule
-from comer.lit_comer import LitCoMER
+from gryph.score import CER
 from pytorch_lightning import Trainer, seed_everything
+
+from ical.datamodule import CROHMEDatamodule
+from ical.lit_ical import LitICAL
 
 seed_everything(7)
 
@@ -38,15 +40,15 @@ def process(ckpt: str, data: str, split: str):
         num_workers=1,
     )
 
-    model = LitCoMER.load_from_checkpoint(ckpt)
-    data = trainer.predict(model, datamodule=dm)
+    model = LitICAL.load_from_checkpoint(ckpt)
+    data = sum(trainer.predict(model, datamodule=dm), [])
 
     params = sum(p.numel() for p in model.parameters())
 
-    scores = dict(CER=model.cer, EM=model.exp_rate)
+    scores = CER(prefix="tex").compute_metrics(data)
     scores.update(fps=model.fps, params=params)
 
-    result.update(scores=scores, data=sum(data, []))
+    result.update(scores=scores, data=data)
 
     return result
 
