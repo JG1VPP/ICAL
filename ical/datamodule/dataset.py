@@ -2,7 +2,9 @@ import pickle
 from pathlib import Path
 
 from gryph.inkml import paint_inkml, scale_inkml
+from mmcv.image import gray2rgb, impad, imrescale
 from torch.utils.data.dataset import Dataset
+from torchvision.transforms.functional import to_tensor
 
 
 class CROHMEDataset(Dataset):
@@ -37,13 +39,31 @@ class CROHMEDataset(Dataset):
     def __getitem__(self, idx):
         item = self.ds[idx]
 
-        tex = item["tex"]
-        ink = item["ink"]
+        tex = item.get("tex")
+        ink = item.get("ink")
+        img = item.get("img")
 
+        if img is not None:
+            img = self.process_img(img)
+
+        else:
+            img = self.process_ink(ink)
+
+        return item["name"], img, tex
+
+    def process_img(self, img):
+        img = gray2rgb(img)
+        img = imrescale(img, scale=(self.h, self.w))
+        img = impad(img, shape=(self.h, self.w))
+        img = to_tensor(img)
+
+        return img
+
+    def process_ink(self, ink):
         ink = scale_inkml(ink, w=self.w, h=self.h)
         img = paint_inkml(ink, w=self.w, h=self.h, fill=self.fill, line=self.line)
 
-        return item["name"], img, tex
+        return img
 
     def __len__(self):
         return len(self.ds)

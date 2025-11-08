@@ -93,7 +93,7 @@ class CROHMEDatamodule(pl.LightningDataModule):
             )
             self.val_dataset = CROHMEDataset(
                 path=self.path,
-                split="valid",
+                split="test",
                 w=self.w,
                 h=self.h,
                 fill=self.fill,

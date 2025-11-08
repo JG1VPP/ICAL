@@ -34,4 +34,4 @@ class CROHMEVocab:
         return len(self.word2idx)
 
 
-vocab = CROHMEVocab("dictionary.txt")
+vocab = CROHMEVocab("dictionary_hme100k.txt")
